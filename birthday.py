@@ -1,26 +1,3 @@
-from datetime import datetime, timedelta
-import collections
-import calendar
-import sys
-
-test_users = [
-    {"name": "Kate", "birthday": datetime(year=2012, month=8, day=2)},  # "02.08.2012"
-    {"name": "Alex", "birthday": datetime(year=2005, month=8, day=5)},  # "05.08.2005"
-    {"name": "Sem", "birthday": datetime(year=2002, month=8, day=12)},  # "12.08.2002"
-    {
-        "name": "Nataly",
-        "birthday": datetime(year=2000, month=8, day=15),
-    },  # "15.08.2000"
-    {
-        "name": "Nic",
-        "birthday": datetime(year=2015, month=8, day=8),
-    },  # "10.08.2015" Monday
-    {"name": "Max", "birthday": datetime(year=2001, month=7, day=31)},  # "31.07.2001"
-    {"name": "Leo", "birthday": datetime(year=2005, month=8, day=1)},  # "01.08.2005"
-    {"name": "Bill", "birthday": datetime(year=2003, month=8, day=3)},  # "01.08.2005"
-    {"name": "Kim", "birthday": datetime(year=2000, month=8, day=2)},  # "01.08.2005"
-]
-
 """Завдання
 
 Вам потрібно реалізувати корисну функцію для виведення списку колег, яких потрібно привітати з днем народження на тижні.
@@ -39,43 +16,64 @@ Friday: Kim, Jan
 Функція виводить користувачів з днями народження на тиждень вперед від поточного дня.
 Тиждень починається з понеділка."""
 
-res = []  # data for values(names)
+from datetime import datetime, timedelta
+import collections
+import calendar
 
-days_dict = {
-    "Monday": [],
-    "Tuesday": [],
-    "Wednesday": [],
-    "Thursday": [],
-    "Friday": [],
-    "Saturday": [],
-    "Sunday": [],
-}  # data for keys
+
+test_users = [
+    {"name": "Kate", "birthday": datetime(year=2012, month=8, day=2)},  # "02.08.2012"
+    {"name": "Alex", "birthday": datetime(year=2005, month=8, day=5)},  # "05.08.2005"
+    {"name": "Sem", "birthday": datetime(year=2002, month=8, day=12)},  # "12.08.2002"
+    {
+        "name": "Nataly",
+        "birthday": datetime(year=2000, month=8, day=15),
+    },  # "15.08.2000"
+    {
+        "name": "Nic",
+        "birthday": datetime(year=2015, month=8, day=8),
+    },  # "10.08.2015" Monday
+    {"name": "Max", "birthday": datetime(year=2001, month=7, day=31)},  # "31.07.2001"
+    {"name": "Leo", "birthday": datetime(year=2005, month=8, day=1)},  # "01.08.2005"
+    {"name": "Bill", "birthday": datetime(year=2003, month=8, day=3)},  # "01.08.2005"
+    {"name": "Kim", "birthday": datetime(year=2000, month=8, day=2)},  # "01.08.2005"
+]
+days_dict = {}  # data for keys
+for i in range(7):
+    days_dict[i] = []
 
 
 def get_birthdays_per_week(users: list) -> dict:
+    today = datetime.now()
+    next_week = today + timedelta(weeks=1)
+
     for user in users:
-        day_of_birthday = user["birthday"].strftime("%A")
+        birthdays_in_this_year = user["birthday"].replace(year=today.year)
 
-        if day_of_birthday == "Monday":
-            days_dict["Monday"].append(user["name"])
-        elif day_of_birthday == "Tuesday":
-            days_dict["Tuesday"].append(user["name"])
-        elif day_of_birthday == "Wednesday":
-            days_dict["Wednesday"].append(user["name"])
-        elif day_of_birthday == "Thursday":
-            days_dict["Thursday"].append(user["name"])
-        elif day_of_birthday == "Friday":
-            days_dict["Friday"].append(user["name"])
-        elif day_of_birthday == "Saturday":
-            days_dict["Saturday"].append(user["name"])
-        elif day_of_birthday == "Sunday":
-            days_dict["Sunday"].append(user["name"])
-    # print(days_dict)
+        if today <= birthdays_in_this_year < next_week:
+            day_of_week = user["birthday"].weekday()
 
-    today = datetime.now().strftime("%A")
+            if birthdays_in_this_year.weekday() in [6, 7]:
+                day_of_week[0].append(user["name"])
+
+            days_dict[day_of_week].append(user["name"])
+
+    out_days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+
+    for k, v in days_dict.items():
+        if len(v) == 0:
+            continue
+        day = out_days[k]
+        print(f"{day}: {','.join(v)}")
 
 
-# if __name__ == '__main__':
-# sys.stdout =
-
-a = get_birthdays_per_week(test_users)
+if __name__ == "__main__":
+    get_birthdays_per_week(test_users)
